@@ -1,0 +1,10 @@
+---
+  - name: "create Metrics Exporter ImageStream template from git master"
+    k8s:
+      state: present
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/imageStream-template.yaml') }}"
+
+  - name: "create Metrics Exporter Deployment template from git master"
+    k8s:
+      state: present
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/deployment-template.yaml') }}"
