@@ -2,9 +2,25 @@
   - name: "create Metrics Exporter ImageStream template from git master"
     k8s:
       state: present
-      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/imageStream-template.yaml') }}"
+      namespace: "{{ project_name }}"
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/imageStream-template.yaml', split_lines=False) }}"
+
+  - name: "create Metrics Exporter BuildConfig template from git master"
+    k8s:
+      state: present
+      namespace: "{{ project_name }}"
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/buildConfig-template.yaml', split_lines=False) }}"
 
   - name: "create Metrics Exporter Deployment template from git master"
     k8s:
       state: present
-      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/deployment-template.yaml') }}"
+      namespace: "{{ project_name }}"
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/thoth-station/metrics-exporter/master/openshift/deployment-template.yaml', split_lines=False) }}"
+
+  - name: "process and apply templates"
+    shell: oc process --namespace "{{ project_name }}" \
+            "{{ item }}" | oc apply --namespace "{{ project_name }}" -f -
+    with_items:
+      - "thoth-metrics-exporter-imagestream"
+      - "thoth-metrics-exporter-buildconfig"
+      - "thoth-metrics-exporter-deployment"
